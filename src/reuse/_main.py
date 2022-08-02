@@ -247,10 +247,7 @@ def main(args: List[str] = None, out=sys.stdout) -> int:
         out.write(f"reuse {__version__}\n")
         return 0
 
-    if parsed_args.root:
-        project = Project(parsed_args.root)
-    else:
-        project = create_project()
+    project = Project(parsed_args.root) if parsed_args.root else create_project()
     project.include_submodules = parsed_args.include_submodules
 
     return parsed_args.func(parsed_args, project, out)

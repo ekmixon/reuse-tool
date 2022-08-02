@@ -61,13 +61,13 @@ class ProjectReport:  # pylint: disable=too-many-instance-attributes
 
     def __init__(self, do_checksum: bool = True):
         self.path = None
-        self.licenses = dict()
-        self.missing_licenses = dict()
-        self.bad_licenses = dict()
+        self.licenses = {}
+        self.missing_licenses = {}
+        self.bad_licenses = {}
         self.deprecated_licenses = set()
         self.read_errors = set()
         self.file_reports = set()
-        self.licenses_without_extension = dict()
+        self.licenses_without_extension = {}
 
         self.do_checksum = do_checksum
 
@@ -347,7 +347,7 @@ class FileReport:
 
         # pylint: disable=protected-access
         relative = project.relative_from_root(path)
-        report = cls("./" + str(relative), path, do_checksum=do_checksum)
+        report = cls(f"./{str(relative)}", path, do_checksum=do_checksum)
 
         # Checksum and ID
         if report.do_checksum:

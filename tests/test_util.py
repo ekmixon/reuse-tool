@@ -39,9 +39,7 @@ def test_extract_expression():
     """Parse various expressions."""
     expressions = ["GPL-3.0+", "GPL-3.0 AND CC0-1.0", "nonsense"]
     for expression in expressions:
-        result = _util.extract_spdx_info(
-            "SPDX" "-License-Identifier: {}".format(expression)
-        )
+        result = _util.extract_spdx_info(f"SPDX-License-Identifier: {expression}")
         assert result.spdx_expressions == {_LICENSING.parse(expression)}
 
 

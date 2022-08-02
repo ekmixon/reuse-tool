@@ -59,7 +59,7 @@ class Project:
             _LOGGER.warning(_("could not find supported VCS"))
             self.vcs_strategy = VCSStrategyNone(self)
 
-        self.licenses_without_extension = dict()
+        self.licenses_without_extension = {}
 
         self.license_map = LICENSE_MAP.copy()
         # TODO: Is this correct?
@@ -184,10 +184,7 @@ class Project:
                 if pattern.match(name):
                     return True
 
-        if self.vcs_strategy.is_ignored(path):
-            return True
-
-        return False
+        return bool(self.vcs_strategy.is_ignored(path))
 
     def _identifier_of_license(self, path: Path) -> str:
         """Figure out the SPDX License identifier of a license given its path.
@@ -232,7 +229,7 @@ class Project:
         """Return a dictionary of all licenses in the project, with their SPDX
         identifiers as names and paths as values.
         """
-        license_files = dict()
+        license_files = {}
 
         directory = str(self.root / "LICENSES/**")
         for path in glob.iglob(directory, recursive=True):

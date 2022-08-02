@@ -91,8 +91,7 @@ class CommentStyle:
                 f"{cls} cannot create multi-line comments"
             )
         text = text.strip("\n")
-        result = []
-        result.append(cls.MULTI_LINE[0])
+        result = [cls.MULTI_LINE[0]]
         for line in text.splitlines():
             if cls.MULTI_LINE[2] in text:
                 raise CommentCreateError(
@@ -227,7 +226,7 @@ class CommentStyle:
                 if not line.startswith(cls.SINGLE_LINE):
                     break
                 end = i
-            return "\n".join(lines[0 : end + 1])
+            return "\n".join(lines[:end + 1])
         if cls.can_handle_multi() and text.startswith(cls.MULTI_LINE[0]):
             end = 0
             for i, line in enumerate(lines):
@@ -236,7 +235,7 @@ class CommentStyle:
                     break
             else:
                 raise CommentParseError("Comment block never delimits")
-            return "\n".join(lines[0 : end + 1])
+            return "\n".join(lines[:end + 1])
 
         raise CommentParseError(
             "Could not find a parseable comment block at the first character"
@@ -668,9 +667,12 @@ FILENAME_COMMENT_STYLE_MAP_LOWERCASE = {
 def _all_style_classes() -> List[CommentStyle]:
     """Return a list of all defined style classes, excluding the base class."""
     result = []
-    for key, value in globals().items():
-        if key.endswith("CommentStyle") and key != "CommentStyle":
-            result.append(value)
+    result.extend(
+        value
+        for key, value in globals().items()
+        if key.endswith("CommentStyle") and key != "CommentStyle"
+    )
+
     return sorted(result, key=operator.attrgetter("__name__"))
 
 

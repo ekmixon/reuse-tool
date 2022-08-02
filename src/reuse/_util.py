@@ -6,6 +6,7 @@
 
 """Misc. utilities for reuse."""
 
+
 # pylint: disable=ungrouped-imports
 
 import logging
@@ -39,20 +40,22 @@ _LICENSING = Licensing()
 _END_PATTERN = "{}$".format(
     "".join(
         {
-            "(?:{})*".format(re.escape(style.MULTI_LINE[2]))
+            f"(?:{re.escape(style.MULTI_LINE[2])})*"
             for style in _all_style_classes()
             if style.MULTI_LINE[2]
         }
     )
 )
+
 _IDENTIFIER_PATTERN = re.compile(
     r"SPDX" "-License-Identifier:[ \t]+(.*?)" + _END_PATTERN, re.MULTILINE
 )
 _COPYRIGHT_PATTERNS = [
     re.compile(r"(SPDX" "-FileCopyrightText:[ \t]+.*?)" + _END_PATTERN),
-    re.compile(r"(Copyright .*?)" + _END_PATTERN),
-    re.compile(r"(© .*?)" + _END_PATTERN),
+    re.compile(f"(Copyright .*?){_END_PATTERN}"),
+    re.compile(f"(© .*?){_END_PATTERN}"),
 ]
+
 
 _COPYRIGHT_STYLES = {
     "spdx": "SPDX-FileCopyrightText:",
@@ -155,9 +158,7 @@ def _determine_license_path(path: PathLike) -> Path:
 def _determine_license_suffix_path(path: PathLike) -> Path:
     """Given a path FILE or FILE.license, return FILE.license."""
     path = Path(path)
-    if path.suffix == ".license":
-        return path
-    return Path(f"{path}.license")
+    return path if path.suffix == ".license" else Path(f"{path}.license")
 
 
 def _copyright_from_dep5(path: PathLike, copyright: Copyright) -> SpdxInfo:
@@ -335,13 +336,12 @@ def print_incorrect_spdx_identifier(identifier: str, out=sys.stdout) -> None:
     )
     out.write("\n")
 
-    suggestions = similar_spdx_identifiers(identifier)
-    if suggestions:
+    if suggestions := similar_spdx_identifiers(identifier):
         out.write("\n")
         out.write(_("Did you mean:"))
         out.write("\n")
         for suggestion in suggestions:
-            out.write("* {}\n".format(suggestion))
+            out.write(f"* {suggestion}\n")
         out.write("\n")
     out.write(
         _(
@@ -356,7 +356,7 @@ def detect_line_endings(text: str) -> str:
     *text*. Return os.linesep if there are no line endings.
     """
     line_endings = ["\r\n", "\r", "\n"]
-    for line_ending in line_endings:
-        if line_ending in text:
-            return line_ending
-    return os.linesep
+    return next(
+        (line_ending for line_ending in line_endings if line_ending in text),
+        os.linesep,
+    )

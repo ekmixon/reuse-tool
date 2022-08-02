@@ -203,11 +203,9 @@ def find_root(cwd: PathLike = None) -> Optional[Path]:
     :raises NotADirectoryError: if directory is not a directory.
     """
     if GIT_EXE:
-        root = VCSStrategyGit.find_root(cwd=cwd)
-        if root:
+        if root := VCSStrategyGit.find_root(cwd=cwd):
             return root
-    if HG_EXE:
-        root = VCSStrategyHg.find_root(cwd=cwd)
-        if root:
+    if root := VCSStrategyHg.find_root(cwd=cwd):
+        if HG_EXE:
             return root
     return None

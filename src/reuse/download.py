@@ -141,10 +141,7 @@ def run(args, project: Project, out=sys.stdout) -> int:
 
     return_code = 0
     for lic in licenses:
-        if args.file:
-            destination = args.file
-        else:
-            destination = _path_to_license_file(lic)
+        destination = args.file or _path_to_license_file(lic)
         try:
             put_license_in_file(lic, destination=destination)
         except requests.RequestException:

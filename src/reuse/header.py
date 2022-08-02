@@ -179,14 +179,9 @@ def _indices_of_newlines(text: str) -> Sequence[int]:
     indices = [0]
     start = 0
 
-    while True:
-        match = _NEWLINE_PATTERN.search(text, start)
-        if match:
-            start = match.span()[1]
-            indices.append(start)
-        else:
-            break
-
+    while match := _NEWLINE_PATTERN.search(text, start):
+        start = match.span()[1]
+        indices.append(start)
     return indices
 
 
@@ -274,19 +269,17 @@ def find_and_replace_header(
         if header.startswith(prefix) and not before.strip():
             before = ""
             for line in header.splitlines():
-                if line.startswith(prefix):
-                    before = before + "\n" + line
-                    header = header.replace(line, "", 1)
-                else:
+                if not line.startswith(prefix):
                     break
+                before = before + "\n" + line
+                header = header.replace(line, "", 1)
         elif after.startswith(prefix) and not any((before, header)):
             for line in after.splitlines():
-                if line.startswith(prefix):
-                    before = before + "\n" + line
-                    after = after.replace(line, "", 1)
-                else:
+                if not line.startswith(prefix):
                     break
 
+                before = before + "\n" + line
+                after = after.replace(line, "", 1)
     header = create_header(
         spdx_info,
         header,
@@ -577,13 +570,7 @@ def run(args, project: Project, out=sys.stdout) -> int:
         if ".commented" in Path(template.name).suffixes:
             commented = True
 
-    year = None
-    if not args.exclude_year:
-        if args.year:
-            year = args.year
-        else:
-            year = datetime.date.today().year
-
+    year = None if args.exclude_year else args.year or datetime.date.today().year
     expressions = set(args.license) if args.license is not None else set()
     copyright_style = (
         args.copyright_style if args.copyright_style is not None else "spdx"

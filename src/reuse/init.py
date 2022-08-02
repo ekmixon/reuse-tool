@@ -63,10 +63,7 @@ def add_arguments(parser):
 def run(args, project: Project, out=sys.stdout):
     """List all non-compliant files."""
     # pylint: disable=too-many-statements,unused-argument
-    if args.path:
-        root = args.path
-    else:
-        root = find_root()
+    root = args.path or find_root()
     if root is None:
         root = Path.cwd()
 

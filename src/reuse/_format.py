@@ -33,17 +33,11 @@ def split_into_paragraphs(text):
     paragraph = ""
 
     for line in lines:
-        if not line:
-            if paragraph:
-                yield paragraph
-                paragraph = ""
-            else:
-                continue
-        else:
-            if paragraph:
-                padding = " "
-            else:
-                padding = ""
+        if line:
+            padding = " " if paragraph else ""
             paragraph = f"{paragraph}{padding}{line}"
+        elif paragraph:
+            yield paragraph
+            paragraph = ""
     if paragraph:
         yield paragraph
